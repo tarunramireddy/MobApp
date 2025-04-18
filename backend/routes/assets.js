@@ -80,7 +80,15 @@ router.get('/stats', async (req, res) => {
 });
 
 
-
+router.get('/recent', async (req, res) => {
+  try {
+    const recentAssets = await Asset.find().sort({ createdAt: -1 }).limit(2);
+    res.json({ success: true, recent: recentAssets });
+  } catch (error) {
+    console.error('Error fetching recent assets:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch recent assets' });
+  }
+});
 
 
 module.exports = router;

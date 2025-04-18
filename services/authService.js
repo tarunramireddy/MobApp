@@ -22,6 +22,7 @@ export const signin = async (credentials) => {
   }
 };
 
+
 export const updateAsset = async (id, assetData) => {
   try {
     const response = await axios.put(`${API_BASE_URL}/assets/update/${id}`, assetData);
@@ -84,6 +85,17 @@ export const getAssetStats = async () => {
     return { total: 0, available: 0, assigned: 0, maintenance: 0 };
   }
 };
+
+export const getRecentAssets = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/assets/recent`);
+    return response.data.recent; // only return array
+  } catch (error) {
+    console.error("Error fetching recent assets:", error);
+    return [];
+  }
+};
+
 
 
 

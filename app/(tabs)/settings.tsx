@@ -1,75 +1,111 @@
-import { StyleSheet, View, Text, ScrollView, Switch, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, ScrollView, Switch, TouchableOpacity, Alert, Platform, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 export default function Settings() {
+  const [pushEnabled, setPushEnabled] = useState(true);
+  const [emailEnabled, setEmailEnabled] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    setIsDarkMode(colorScheme === 'dark');
+  }, [colorScheme]);
+
   const handleSignOut = () => {
     router.replace('/(auth)/sign-in');
   };
 
+  const handleLanguagePress = () => {
+    const msg = 'Language setting is not editable in this version.';
+    Platform.OS === 'web' ? alert(msg) : Alert.alert('Language', msg);
+  };
+
+  const handleThemePress = () => {
+    const msg = 'Toggle dark mode below.';
+    Platform.OS === 'web' ? alert(msg) : Alert.alert('Theme', msg);
+  };
+
+  const handleProfilePress = () => {
+    const msg = 'Profile editing is under development.';
+    Platform.OS === 'web' ? alert(msg) : Alert.alert('Profile', msg);
+  };
+
+  const handleSecurityPress = () => {
+    const msg = 'Please contact the system administrator for a temporary password.';
+    Platform.OS === 'web' ? alert(msg) : Alert.alert('Forgot Password', msg);
+  };
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+
+  const themeStyles = isDarkMode ? darkStyles : styles;
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
+    <View style={themeStyles.container}>
+      <View style={themeStyles.header}>
+        <Text style={themeStyles.title}>Settings</Text>
       </View>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingTitle}>Push Notifications</Text>
-              <Text style={styles.settingDescription}>Receive alerts about assets</Text>
+      <ScrollView style={themeStyles.content}>
+        <View style={themeStyles.section}>
+          <Text style={themeStyles.sectionTitle}>Notifications</Text>
+          <View style={themeStyles.settingItem}>
+            <View style={themeStyles.settingInfo}>
+              <Text style={themeStyles.settingTitle}>Push Notifications</Text>
+              <Text style={themeStyles.settingDescription}>Receive alerts about assets</Text>
             </View>
-            <Switch value={true} onValueChange={() => {}} />
+            <Switch value={pushEnabled} onValueChange={setPushEnabled} />
           </View>
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingTitle}>Email Notifications</Text>
-              <Text style={styles.settingDescription}>Receive email reports and alerts</Text>
+          <View style={themeStyles.settingItem}>
+            <View style={themeStyles.settingInfo}>
+              <Text style={themeStyles.settingTitle}>Email Notifications</Text>
+              <Text style={themeStyles.settingDescription}>Receive email reports and alerts</Text>
             </View>
-            <Switch value={true} onValueChange={() => {}} />
+            <Switch value={emailEnabled} onValueChange={setEmailEnabled} />
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>App Settings</Text>
-          <TouchableOpacity style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingTitle}>Language</Text>
-              <Text style={styles.settingDescription}>English</Text>
+        <View style={themeStyles.section}>
+          <Text style={themeStyles.sectionTitle}>App Settings</Text>
+          <TouchableOpacity style={themeStyles.settingItem} onPress={handleLanguagePress}>
+            <View style={themeStyles.settingInfo}>
+              <Text style={themeStyles.settingTitle}>Language</Text>
+              <Text style={themeStyles.settingDescription}>English</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#8E8E93" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingTitle}>Theme</Text>
-              <Text style={styles.settingDescription}>Light</Text>
+          <TouchableOpacity style={themeStyles.settingItem} onPress={handleThemePress}>
+            <View style={themeStyles.settingInfo}>
+              <Text style={themeStyles.settingTitle}>Theme</Text>
+              <Text style={themeStyles.settingDescription}>{isDarkMode ? 'Dark' : 'Light'}</Text>
+            </View>
+            <Switch value={isDarkMode} onValueChange={toggleDarkMode} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={themeStyles.section}>
+          <Text style={themeStyles.sectionTitle}>Account</Text>
+          <TouchableOpacity style={themeStyles.settingItem} onPress={handleProfilePress}>
+            <View style={themeStyles.settingInfo}>
+              <Text style={themeStyles.settingTitle}>Profile</Text>
+              <Text style={themeStyles.settingDescription}>Manage your account</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={24} color="#8E8E93" />
+          </TouchableOpacity>
+          <TouchableOpacity style={themeStyles.settingItem} onPress={handleSecurityPress}>
+            <View style={themeStyles.settingInfo}>
+              <Text style={themeStyles.settingTitle}>Security</Text>
+              <Text style={themeStyles.settingDescription}>Password and authentication</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#8E8E93" />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
-          <TouchableOpacity style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingTitle}>Profile</Text>
-              <Text style={styles.settingDescription}>Manage your account</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={24} color="#8E8E93" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingTitle}>Security</Text>
-              <Text style={styles.settingDescription}>Password and authentication</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={24} color="#8E8E93" />
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <Text style={styles.signOutText}>Sign Out</Text>
+        <TouchableOpacity style={themeStyles.signOutButton} onPress={handleSignOut}>
+          <Text style={themeStyles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -100,10 +136,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
@@ -147,5 +180,47 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+});
+
+const darkStyles = StyleSheet.create({
+  ...styles,
+  container: {
+    ...styles.container,
+    backgroundColor: '#1c1c1e',
+  },
+  header: {
+    ...styles.header,
+    backgroundColor: '#2c2c2e',
+    borderBottomColor: '#3a3a3c',
+  },
+  title: {
+    ...styles.title,
+    color: '#fff',
+  },
+  section: {
+    ...styles.section,
+    backgroundColor: '#2c2c2e',
+  },
+  sectionTitle: {
+    ...styles.sectionTitle,
+    color: '#fff',
+    borderBottomColor: '#3a3a3c',
+  },
+  settingTitle: {
+    ...styles.settingTitle,
+    color: '#fff',
+  },
+  settingDescription: {
+    ...styles.settingDescription,
+    color: '#d1d1d6',
+  },
+  signOutButton: {
+    ...styles.signOutButton,
+    backgroundColor: '#ff453a',
+  },
+  signOutText: {
+    ...styles.signOutText,
+    color: '#fff',
   },
 });

@@ -2,29 +2,71 @@ import { useState } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity, Text, Alert } from 'react-native';
 import { signin } from '../../services/authService';
 import { router } from 'expo-router';
+import { Platform } from 'react-native';
+
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignIn = async () => {
+const handleSignIn = async () => {
+
+  if (!email.trim() || !password.trim()) {
+    const msg = "Email and password are required.";
+
+    if (Platform.OS === 'web') {
+      alert(msg); // works on web
+    } else {
+      Alert.alert("Error", msg); // works on mobile
+    }
+
+    return;
+  }
+
   try {
     const response = await signin({ email, password });
 
     if (!response.success) {
-      Alert.alert('Error', response.message);
+
+      if (Platform.OS === 'web') {
+        alert(response.message || "Something went wrong");
+      } else {
+        Alert.alert("Error", response.message || "Something went wrong");
+      }
       return;
     }
 
-    Alert.alert('Success', response.message);
+    if (Platform.OS === 'web') {
+      alert(response.message);
+    } else {
+      Alert.alert("Success", response.message);
+    }
+
     router.replace('/(tabs)');
   } catch (error: any) {
-    console.error('Caught Sign In Error:', error);
+
     const errorMessage =
-      error?.response?.data?.message || error?.message || 'Sign In failed';
-    Alert.alert('Error', errorMessage);
+      error?.response?.data?.message || error?.message || "Sign In failed";
+
+    if (Platform.OS === 'web') {
+      alert(errorMessage);
+    } else {
+      Alert.alert("Error", errorMessage);
+    }
   }
 };
+
+const handleForgotPassword = () => {
+  const msg = "Please contact the system administrator for a temporary password.";
+
+  if (Platform.OS === 'web') {
+    alert(msg);
+  } else {
+    Alert.alert("Forgot Password", msg);
+  }
+};
+
+  
 
   
 
@@ -48,8 +90,12 @@ export default function SignIn() {
           secureTextEntry
         />
         <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
+  <Text style={styles.buttonText}>Sign In</Text>
+</TouchableOpacity>
+<TouchableOpacity onPress={handleForgotPassword}>
+  <Text style={styles.forgot}>Forgot Password?</Text>
+</TouchableOpacity>
+
         <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')}>
           <Text style={styles.link}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
@@ -65,6 +111,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
+  forgot: {
+    color: '#FF3B30', // red tone for visibility
+    textAlign: 'center',
+    marginTop: 8,
+    textDecorationLine: 'underline',
+  },
+  
   form: {
     backgroundColor: 'white',
     padding: 20,

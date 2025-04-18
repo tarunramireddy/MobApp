@@ -1,16 +1,13 @@
 import { StyleSheet, View, Text, ScrollView, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 
 import { useEffect, useState } from 'react';
-import { getAssetStats } from '../../services/authService'; // import this
+import { getAssetStats } from '../../services/authService';
 
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
-
 import Head from 'expo-router/head';
-
 
 export default function Dashboard() {
   useEffect(() => {
@@ -18,11 +15,12 @@ export default function Dashboard() {
       document.title = 'IT Asset Dashboard';
     }
   }, []);
+
   const [statsData, setStatsData] = useState({
     total: 0,
     available: 0,
     assigned: 0,
-    maintenance: 0
+    maintenance: 0,
   });
 
   const fetchStats = async () => {
@@ -30,16 +28,15 @@ export default function Dashboard() {
       const data = await getAssetStats();
       setStatsData(data);
     } catch (error) {
-      console.error("Failed to fetch dashboard stats", error);
+      console.error('Failed to fetch dashboard stats', error);
     }
   };
-  
+
   useFocusEffect(
     React.useCallback(() => {
       fetchStats();
     }, [])
   );
-  
 
   const stats = [
     {
@@ -69,38 +66,31 @@ export default function Dashboard() {
       icon: 'construct-outline',
       color: '#EF4444',
       onPress: () => router.push('/assets?filter=maintenance'),
-    }
+    },
   ];
-  
 
-
-  const quickActions: { 
-    title: string; 
-    icon: 'add-circle-outline' | 'qr-code-outline' | 'document-text-outline' | 'settings-outline'; 
-    color: string; 
-    onPress: () => void; 
-  }[] = [
-    { 
-      title: 'Add Asset', 
-      icon: 'add-circle-outline', 
+  const quickActions = [
+    {
+      title: 'Add Asset',
+      icon: 'add-circle-outline',
       color: '#6366F1',
       onPress: () => router.push('/assets'),
     },
-    { 
-      title: 'Scan QR', 
-      icon: 'qr-code-outline', 
+    {
+      title: 'Scan QR',
+      icon: 'qr-code-outline',
       color: '#10B981',
       onPress: () => router.push('/scan'),
     },
-    { 
-      title: 'Reports', 
-      icon: 'document-text-outline', 
+    {
+      title: 'Reports',
+      icon: 'document-text-outline',
       color: '#F59E0B',
       onPress: () => router.push('/reports'),
     },
-    { 
-      title: 'Settings', 
-      icon: 'settings-outline', 
+    {
+      title: 'Settings',
+      icon: 'settings-outline',
       color: '#EF4444',
       onPress: () => router.push('/settings'),
     },
@@ -108,32 +98,22 @@ export default function Dashboard() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#1E1B4B', '#312E81']}
-        style={styles.header}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}>
-        <Text style={styles.greeting}>Welcome back,</Text>
-        <Text style={styles.title}>IT Asset Dashboard</Text>
-      </LinearGradient>
+      <View style={styles.headerOverlay}>
+        <Text style={styles.welcomeLine}>Welcome back 👋</Text>
+        <Text style={styles.dashboardTitle}>IT Asset Dashboard</Text>
+      </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.statsGrid}>
           {stats.map((stat, index) => (
-            <Pressable 
-              key={index} 
+            <Pressable
+              key={index}
               onPress={stat.onPress}
-              style={({ pressed }) => [
-                styles.statCard,
-                pressed && styles.statCardPressed
-              ]}>
-              <LinearGradient
-                colors={[stat.color, stat.color + '99']}
-                style={styles.statIconBg}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}>
-                <Ionicons name={stat.icon as any} size={24} color="white" />
-              </LinearGradient>
+              style={({ pressed }) => [styles.statCard, pressed && styles.statCardPressed]}
+            >
+              <View style={[styles.statIconBg, { backgroundColor: stat.color + '20' }]}> 
+              <Ionicons name={stat.icon as any} size={24} color={stat.color} />
+              </View>
               <Text style={styles.statValue}>{stat.value}</Text>
               <Text style={styles.statTitle}>{stat.title}</Text>
             </Pressable>
@@ -143,22 +123,16 @@ export default function Dashboard() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent Activities</Text>
-            <Pressable 
+            <Pressable
               onPress={() => router.push('/reports')}
-              style={({ pressed }) => [
-                styles.viewAllButton,
-                pressed && { opacity: 0.7 }
-              ]}>
+              style={({ pressed }) => [styles.viewAllButton, pressed && { opacity: 0.7 }]}
+            >
               <Text style={styles.viewAllText}>View All</Text>
               <Ionicons name="arrow-forward" size={16} color="#6366F1" />
             </Pressable>
           </View>
           <View style={styles.activityList}>
-            <Pressable 
-              style={({ pressed }) => [
-                styles.activityItem,
-                pressed && { opacity: 0.7 }
-              ]}>
+            <Pressable style={({ pressed }) => [styles.activityItem, pressed && { opacity: 0.7 }]}>
               <View style={[styles.activityIcon, { backgroundColor: '#6366F120' }]}>
                 <Ionicons name="time-outline" size={20} color="#6366F1" />
               </View>
@@ -168,11 +142,7 @@ export default function Dashboard() {
                 <Text style={styles.activityTime}>2 hours ago</Text>
               </View>
             </Pressable>
-            <Pressable 
-              style={({ pressed }) => [
-                styles.activityItem,
-                pressed && { opacity: 0.7 }
-              ]}>
+            <Pressable style={({ pressed }) => [styles.activityItem, pressed && { opacity: 0.7 }]}>
               <View style={[styles.activityIcon, { backgroundColor: '#F59E0B20' }]}>
                 <Ionicons name="alert-circle-outline" size={20} color="#F59E0B" />
               </View>
@@ -189,15 +159,14 @@ export default function Dashboard() {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionGrid}>
             {quickActions.map((action, index) => (
-              <Pressable 
+              <Pressable
                 key={index}
                 onPress={action.onPress}
-                style={({ pressed }) => [
-                  styles.actionCard,
-                  pressed && styles.actionCardPressed
-                ]}>
+                style={({ pressed }) => [styles.actionCard, pressed && styles.actionCardPressed]}
+              >
                 <View style={[styles.actionIcon, { backgroundColor: action.color + '20' }]}>
-                  <Ionicons name={action.icon} size={24} color={action.color} />
+                <Ionicons name={action.icon as any} size={24} color={action.color} />
+
                 </View>
                 <Text style={styles.actionTitle}>{action.title}</Text>
               </Pressable>
@@ -214,22 +183,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
-  header: {
-    padding: 20,
+  headerOverlay: {
+    backgroundColor: 'rgba(30, 27, 75, 0.65)',
     paddingTop: Platform.OS === 'web' ? 20 : 60,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
-  greeting: {
-    fontSize: 16,
+  welcomeLine: {
     color: '#E0E7FF',
+    fontSize: 16,
     marginBottom: 4,
   },
-  title: {
-    fontSize: 28,
+  dashboardTitle: {
+    fontSize: 26,
     fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 10,
+    color: '#ffffff',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
   content: {
     flex: 1,

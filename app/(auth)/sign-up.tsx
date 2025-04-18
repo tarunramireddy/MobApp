@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Text, Alert } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity, Text, Alert, Platform } from 'react-native';
 import { signup } from '../../services/authService';
 import { router } from 'expo-router';
 
@@ -9,15 +9,55 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
 
   const handleSignUp = async () => {
+    console.log("📝 handleSignUp triggered");
+
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      const msg = "All fields are required.";
+      console.log("❗ Empty fields - showing alert");
+
+      if (Platform.OS === 'web') {
+        alert(msg);
+      } else {
+        Alert.alert("Error", msg);
+      }
+      return;
+    }
+
     try {
       const response = await signup({ name, email, password });
-      Alert.alert('Success', response.message);
-      router.replace('/(auth)/sign-in'); // Redirect to sign-in page after successful signup
-    } catch (error) {
-      const errorMessage = (error as any)?.response?.data?.message || 'Signup failed';
-      Alert.alert('Error', errorMessage);
+      console.log("✅ Signup response:", response);
+
+      if (!response.success) {
+        if (Platform.OS === 'web') {
+          alert(response.message || "Signup failed");
+        } else {
+          Alert.alert("Error", response.message || "Signup failed");
+        }
+        return;
+      }
+
+      if (Platform.OS === 'web') {
+        alert("Signup successful! Redirecting to sign in.");
+      } else {
+        Alert.alert("Success", "Signup successful! Redirecting to sign in.");
+      }
+
+      router.replace('/(auth)/sign-in');
+    } catch (error: any) {
+      console.error("❌ Signup error:", error);
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "Signup failed";
+
+      if (Platform.OS === 'web') {
+        alert(errorMessage);
+      } else {
+        Alert.alert("Error", errorMessage);
+      }
     }
   };
+
+  // ... (rest of your UI code remains unchanged)
+
 
   return (
     <View style={styles.container}>

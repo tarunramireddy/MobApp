@@ -8,5 +8,4 @@ const AssetSchema = new mongoose.Schema({
   employeeId: { type: String, required: true },
   serialNumber: { type: String, required: true },
 }, { timestamps: true });
-
 module.exports = mongoose.model('Asset', AssetSchema);
